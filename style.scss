@@ -1,0 +1,422 @@
+$font-family: 'Lato', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif';
+
+// Reset and base styles
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+body {
+	font-family: $font-family;
+	background: #1a1a1a;
+	color: #ffffff;
+	height: 100vh;
+	overflow: hidden;
+	user-select: none;
+	-webkit-user-select: none;
+	-webkit-touch-callout: none;
+}
+
+// Main player container
+#player-container {
+	height: 100vh;
+	display: flex;
+	flex-direction: column;
+	position: relative;
+}
+
+// Main player area - tap to pause/resume
+#main-player-area {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	padding: 2rem;
+	cursor: pointer;
+	background: #e5e5e5;
+	color: #333;
+	transition: all .5s ease;
+	
+	&.playing {
+		background: #48e9ab;
+		color: #333;
+	}
+}
+
+// Track information
+#current-track-info {
+	text-align: center;
+	
+	h2 {
+		font-size: 1.8rem;
+		font-weight: 400;
+		margin-bottom: 1rem;
+		opacity: 0.9;
+	}
+	
+	p {
+		font-size: 1.2rem;
+		opacity: 0.7;
+		font-weight: 400;
+	}
+}
+
+// Controls section
+#controls {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background: rgba(0, 0, 0, 0.8);
+	backdrop-filter: blur(10px);
+	padding: 1.5rem;
+	border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+// Scrubber container
+#scrubber-container {
+	margin-bottom: 1.5rem;
+}
+
+// Time display - now near scrubber
+#time-display {
+	display: flex;
+	justify-content: space-between;
+	width: 100%;
+	margin-bottom: 0.8rem;
+	
+	span {
+		font-size: 0.9rem;
+		opacity: 0.8;
+		font-weight: 400;
+	}
+}
+
+// Scrubber
+#scrubber-bar {
+	position: relative;
+	height: 4px;
+	background: rgba(255, 255, 255, 0.2);
+	border-radius: 2px;
+	cursor: pointer;
+	
+	&:hover {
+		background: rgba(255, 255, 255, 0.3);
+	}
+}
+
+#scrubber-progress {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 100%;
+	background: #3498db;
+	border-radius: 2px;
+	transition: width 0.1s ease;
+}
+
+#scrubber-handle {
+	position: absolute;
+	top: 50%;
+	left: 0;
+	width: 16px;
+	height: 16px;
+	background: #3498db;
+	border-radius: 50%;
+	transform: translate(-50%, -50%);
+	transition: left 0.1s ease;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+	
+	&:hover {
+		transform: translate(-50%, -50%) scale(1.2);
+	}
+}
+
+// Control buttons
+#control-buttons {
+	display: flex;
+	gap: 0.5rem;
+	justify-content: center;
+	align-items: center;
+}
+
+button {
+	font-family: $font-family;
+	font-size: 1rem;
+	font-weight: 500;
+	cursor: pointer;
+	transition: all 0.3s ease;
+	min-width: 50px;
+	text-align: center;
+}
+
+// Spacer to separate audio and music controls
+.spacer {
+	flex: 1;
+	min-width: 1rem;
+}
+
+.control-btn {
+	color: #ffffff;
+	padding: 0.3rem 0.8rem;
+	border-radius: 6px;
+	font-family: $font-family;
+	font-size: 1rem;
+	font-weight: 500;
+	cursor: pointer;
+	transition: all 0.3s ease;
+	min-width: 50px;
+	text-align: center;
+	border: none;
+	background: none;
+	
+	&:hover {
+		opacity: 0.8;
+	}
+	
+	&:active {
+		transform: scale(0.95);
+	}
+	
+	&:disabled {
+		opacity: 0.4;
+		cursor: not-allowed;
+		
+		&:hover {
+			opacity: 0.4;
+		}
+	}
+}
+
+// File selection buttons (Audio and Music) - keep background and border
+#audio-files-btn,
+#music-files-btn {
+	background: rgba(255, 255, 255, 0.1);
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	font-size: .8rem;
+	
+	&:hover {
+		background: rgba(255, 255, 255, 0.2);
+		border-color: rgba(255, 255, 255, 0.3);
+		opacity: 1;
+	}
+	
+	&:disabled {
+		opacity: 0.4;
+		
+		&:hover {
+			background: rgba(255, 255, 255, 0.1);
+			border-color: rgba(255, 255, 255, 0.2);
+		}
+	}
+}
+
+// Modal styles
+.modal {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(0, 0, 0, 0.8);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	opacity: 0;
+	visibility: hidden;
+	transition: all 0.3s ease;
+	z-index: 1000;
+	
+	&.active {
+		opacity: 1;
+		visibility: visible;
+	}
+}
+
+.modal-content {
+	background: #2c3e50;
+	border-radius: 12px;
+	width: 90%;
+	max-width: 400px;
+	max-height: 80vh;
+	overflow: hidden;
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.modal-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1.5rem;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+	
+	h3 {
+		font-size: 1rem;
+		font-weight: 500;
+		color: #ffffff;
+	}
+}
+
+.close-btn {
+	background: none;
+	border: none;
+	color: #ffffff;
+	font-size: 1.5rem;
+	cursor: pointer;
+	opacity: 0.7;
+	transition: opacity 0.3s ease;
+	
+	&:hover {
+		opacity: 1;
+	}
+}
+
+.modal-body {
+	padding: 1rem;
+	max-height: 60vh;
+	overflow-y: auto;
+}
+
+// File list styles
+.file-item {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: .4rem .4rem .4rem .8rem;
+	margin-bottom: 0.5rem;
+	background: rgba(255, 255, 255, 0.05);
+	border-radius: 8px;
+	transition: background-color 0.3s ease;
+	
+	&:hover {
+		background: rgba(255, 255, 255, 0.1);
+	}
+	
+	&:last-child {
+		margin-bottom: 0;
+	}
+}
+
+.file-name {
+	font-size: 1rem;
+	color: #ffffff;
+	opacity: 0.9;
+	flex: 1;
+	margin-right: 1rem;
+	font-weight: 500;
+}
+
+.play-btn {
+	background: #3498db;
+	border: none;
+	color: #ffffff;
+	padding: 0.5rem 1rem;
+	border-radius: 6px;
+	font-size: 0.9rem;
+	cursor: pointer;
+	transition: background-color 0.3s ease;
+	font-weight: 500;
+	
+	&:hover {
+		background: #2980b9;
+	}
+	
+	&:active {
+		transform: scale(0.95);
+	}
+}
+
+.no-files {
+	text-align: center;
+	color: rgba(255, 255, 255, 0.6);
+	font-style: italic;
+	padding: 2rem;
+	font-weight: 500;
+}
+
+// Responsive design
+@media (max-width: 768px) {
+	#main-player-area {
+		padding: 1.5rem;
+	}
+	
+	#current-track-info h2 {
+		font-size: 1.5rem;
+	}
+	
+	#controls {
+		padding: 1rem;
+	}
+	
+	#scrubber-container {
+		margin-bottom: 1rem;
+	}
+	
+	#time-display {
+		margin-bottom: 0.6rem;
+		
+		span {
+			font-size: 0.8rem;
+		}
+	}
+	
+	#control-buttons {
+		gap: 0.3rem;
+	}
+	
+	.control-btn {
+		padding: 0.4rem 0.6rem;
+		font-size: 0.8rem;
+		min-width: 45px;
+	}
+	
+	.modal-content {
+		width: 95%;
+	}
+	
+	.modal-header {
+		padding: 1rem;
+	}
+	
+	.modal-body {
+		padding: 0.8rem;
+	}
+}
+
+// Touch-friendly improvements
+@media (hover: none) and (pointer: coarse) {
+	#scrubber-handle {
+		width: 20px;
+		height: 20px;
+	}
+	
+	.control-btn {
+		min-width: 50px;
+	}
+	
+	.play-btn {
+		min-height: 36px;
+		min-width: 60px;
+	}
+}
+
+// Scrollbar styling for modal
+.modal-body::-webkit-scrollbar {
+	width: 6px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+	background: rgba(255, 255, 255, 0.1);
+	border-radius: 3px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+	background: rgba(255, 255, 255, 0.3);
+	border-radius: 3px;
+	
+	&:hover {
+		background: rgba(255, 255, 255, 0.5);
+	}
+}
