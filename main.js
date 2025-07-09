@@ -1,8 +1,13 @@
+cl = console.log;
+
 $(document).ready(function() {
 	// Global variables
 	let currentAudioPlayer = null;
 	let currentMusicPlayer = null;
 	let isDragging = false;
+	let isSeeking = false; // Track if a seek operation is in progress
+	let seekQueue = []; // Queue for pending seek operations
+	let audioBuffers = new Map(); // Cache for fully buffered audio files
 
 	// Initialize the app
 	init();
@@ -110,19 +115,97 @@ $(document).ready(function() {
 			// Music player doesn't update main display
 		});
 
-		musicPlayer.addEventListener('play', function() {
-			updateMusicControlButton(true);
-		});
-
-		musicPlayer.addEventListener('pause', function() {
-			updateMusicControlButton(false);
-		});
-
 		musicPlayer.addEventListener('ended', function() {
 			// Loop music
 			musicPlayer.currentTime = 0;
 			musicPlayer.play();
 		});
+	}
+
+	// Function to fully buffer an audio file using fetch
+	async function bufferAudioFile(filePath) {
+		const cacheKey = filePath;
+		
+		// Check if already buffered
+		if (audioBuffers.has(cacheKey)) {
+			return audioBuffers.get(cacheKey);
+		}
+		
+		try {
+			// Fetch the entire file
+			const response = await fetch(filePath);
+			
+			if (!response.ok) {
+				throw new Error(`HTTP error! status: ${response.status}`);
+			}
+			
+			// Read the entire file as a blob
+			const blob = await response.blob();
+			
+			// Create a blob URL for the audio element
+			const blobUrl = URL.createObjectURL(blob);
+			
+			// Store in cache
+			audioBuffers.set(cacheKey, {
+				blobUrl: blobUrl,
+				size: blob.size,
+				originalPath: filePath
+			});
+			
+			return audioBuffers.get(cacheKey);
+			
+		} catch (error) {
+			throw error;
+		}
+	}
+
+	// Function to safely seek to a new position with queue management
+	function safeSeek(audioElement, newTime, onComplete) {
+		// If already seeking, add to queue
+		if (isSeeking) {
+			seekQueue.push({ time: newTime, callback: onComplete });
+			return;
+		}
+
+		isSeeking = true;
+		
+		// Store current playback state
+		const wasPlaying = !audioElement.paused;
+		
+		// Pause if playing to prevent issues during seek
+		if (wasPlaying) {
+			audioElement.pause();
+		}
+		
+		// Set the new time - should be instant with blob URLs
+		audioElement.currentTime = newTime;
+		
+		// Since file is fully buffered, seek should be immediate
+		setTimeout(() => {
+			isSeeking = false;
+			
+			// Resume playback if it was playing before
+			if (wasPlaying) {
+				audioElement.play().then(function() {
+					onComplete();
+					processSeekQueue();
+				}).catch(function(error) {
+					onComplete();
+					processSeekQueue();
+				});
+			} else {
+				onComplete();
+				processSeekQueue();
+			}
+		}, 10); // Minimal delay to ensure seek completes
+	}
+
+	// Function to process the seek queue
+	function processSeekQueue() {
+		if (seekQueue.length > 0 && !isSeeking) {
+			const nextSeek = seekQueue.shift();
+			safeSeek(currentAudioPlayer, nextSeek.time, nextSeek.callback);
+		}
 	}
 
 	function populateFileList(containerId, files, type) {
@@ -154,42 +237,88 @@ $(document).ready(function() {
 		});
 	}
 
-	function playFile(fileName, type) {
+	async function playFile(fileName, type) {
 		const filePath = type + '/' + fileName;
 		
 		if (type === 'audio') {
-			// Stop music if playing
-			if (currentMusicPlayer) {
-				currentMusicPlayer.pause();
-				currentMusicPlayer = null;
-			}
+			// Clear any pending seeks when loading new file
+			seekQueue = [];
+			isSeeking = false;
 
-			// Play audio file
-			const audioPlayer = $('#audio-player')[0];
-			audioPlayer.src = filePath;
-			audioPlayer.play();
-			currentAudioPlayer = audioPlayer;
-			currentMusicPlayer = null;
-
-			// Update UI
+			// Update UI to show loading
 			const displayName = fileName.replace(/\.[^/.]+$/, "");
 			$('#track-title').text(displayName);
-			updatePlayState(true);
-			updateAudioControlButtons(true);
+			updateAudioControlButtons(false);
+			
+			try {
+				// Buffer the entire audio file
+				const bufferedAudio = await bufferAudioFile(filePath);
+				
+				// Play the fully buffered audio
+				const audioPlayer = $('#audio-player')[0];
+				audioPlayer.src = bufferedAudio.blobUrl;
+				
+				// Wait for metadata to load
+				await new Promise((resolve, reject) => {
+					audioPlayer.addEventListener('loadedmetadata', resolve, { once: true });
+					audioPlayer.addEventListener('error', reject, { once: true });
+					// Timeout after 5 seconds
+					setTimeout(() => reject(new Error('Metadata loading timeout')), 5000);
+				});
+				
+				// Start playback
+				await audioPlayer.play();
+				
+				currentAudioPlayer = audioPlayer;
+				
+				// Update UI
+				$('#track-title').text(displayName);
+				updatePlayState(true);
+				updateAudioControlButtons(true);
+				
+			} catch (error) {
+				$('#track-title').text(displayName + ' (Error)');
+				updateAudioControlButtons(false);
+			}
+			
 		} else if (type === 'music') {
-			// Play music in background
-			const musicPlayer = $('#music-player')[0];
-			musicPlayer.src = filePath;
-			musicPlayer.play();
-			currentMusicPlayer = musicPlayer;
+			try {
+				// Buffer the entire music file
+				const bufferedMusic = await bufferAudioFile(filePath);
+				
+				// Play the fully buffered music
+				const musicPlayer = $('#music-player')[0];
+				musicPlayer.src = bufferedMusic.blobUrl;
+				
+				// Wait for metadata to load
+				await new Promise((resolve, reject) => {
+					musicPlayer.addEventListener('loadedmetadata', resolve, { once: true });
+					musicPlayer.addEventListener('error', reject, { once: true });
+					setTimeout(() => reject(new Error('Metadata loading timeout')), 5000);
+				});
+				
+				// Start playback
+				await musicPlayer.play();
+				
+				currentMusicPlayer = musicPlayer;
+				
+				// Update button state after setting currentMusicPlayer
+				updateMusicControlButton(true);
+				
+			} catch (error) {
+				// Handle music error silently
+			}
 		}
 	}
 
 	function togglePlayback() {
 		if (currentAudioPlayer) {
 			if (currentAudioPlayer.paused) {
-				currentAudioPlayer.play();
-				updatePlayState(true);
+				currentAudioPlayer.play().then(function() {
+					updatePlayState(true);
+				}).catch(function(error) {
+					// Handle error silently
+				});
 			} else {
 				currentAudioPlayer.pause();
 				updatePlayState(false);
@@ -201,16 +330,25 @@ $(document).ready(function() {
 	function skipAudio(seconds) {
 		if (currentAudioPlayer) {
 			const newTime = Math.max(0, currentAudioPlayer.currentTime + seconds);
-			currentAudioPlayer.currentTime = newTime;
+			
+			// Use safe seek for skipping
+			safeSeek(currentAudioPlayer, newTime, function() {
+				// Seek completed
+			});
 		}
 	}
 
 	function toggleMusicPlayback() {
 		if (currentMusicPlayer) {
 			if (currentMusicPlayer.paused) {
-				currentMusicPlayer.play();
+				currentMusicPlayer.play().then(function() {
+					updateMusicControlButton(true);
+				}).catch(function(error) {
+					// Handle error silently
+				});
 			} else {
 				currentMusicPlayer.pause();
+				updateMusicControlButton(false);
 			}
 		}
 	}
@@ -235,7 +373,9 @@ $(document).ready(function() {
 		
 		if (currentMusicPlayer) {
 			musicBtn.prop('disabled', false);
-			musicBtn.text(isPlaying ? '⏸' : '▶');
+			// Check actual play state rather than relying on parameter
+			const isActuallyPlaying = !currentMusicPlayer.paused;
+			musicBtn.text(isActuallyPlaying ? '⏸' : '▶');
 		} else {
 			musicBtn.prop('disabled', true);
 			musicBtn.text('▶');
@@ -288,7 +428,11 @@ $(document).ready(function() {
 		const progress = Math.max(0, Math.min(1, clickX / rect.width));
 		
 		const newTime = progress * currentAudioPlayer.duration;
-		currentAudioPlayer.currentTime = newTime;
+		
+		// Use safe seek for scrubber as well
+		safeSeek(currentAudioPlayer, newTime, function() {
+			// Scrubber seek completed
+		});
 		
 		// Update scrubber visual position immediately
 		const progressPercent = progress * 100;
