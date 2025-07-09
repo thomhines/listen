@@ -8,6 +8,13 @@ $(document).ready(function() {
 	let isSeeking = false; // Track if a seek operation is in progress
 	let seekQueue = []; // Queue for pending seek operations
 	let audioBuffers = new Map(); // Cache for fully buffered audio files
+	
+	// Swipe gesture variables
+	let touchStartX = 0;
+	let touchStartY = 0;
+	let touchEndX = 0;
+	let touchEndY = 0;
+	let minSwipeDistance = 50; // Minimum distance for a swipe to be recognized
 
 	// Initialize the app
 	init();
@@ -25,7 +32,7 @@ $(document).ready(function() {
 	}
 
 	function setupEventListeners() {
-		// Main player area - tap to pause/resume
+		// Main player area - tap to pause/resume and swipe gestures
 		$('#main-player-area').on('click', function(e) {
 			// Don't trigger if clicking on controls
 			if ($(e.target).closest('#controls, #top-controls').length) {
@@ -33,6 +40,34 @@ $(document).ready(function() {
 			}
 			togglePlayback();
 		});
+
+			// Swipe gesture detection
+	$('#main-player-area').on('touchstart', function(e) {
+		touchStartX = e.originalEvent.touches[0].clientX;
+		touchStartY = e.originalEvent.touches[0].clientY;
+	});
+
+	$('#main-player-area').on('touchend', function(e) {
+		touchEndX = e.originalEvent.changedTouches[0].clientX;
+		touchEndY = e.originalEvent.changedTouches[0].clientY;
+		
+		const deltaX = touchEndX - touchStartX;
+		const deltaY = touchEndY - touchStartY;
+		
+		// Check if it's a horizontal swipe (more horizontal than vertical)
+		if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > minSwipeDistance) {
+			// Prevent the click event from firing
+			e.preventDefault();
+			
+			if (deltaX > 0) {
+				// Swipe right - skip backward 10 seconds
+				skipAudio(-10);
+			} else {
+				// Swipe left - skip forward 10 seconds
+				skipAudio(10);
+			}
+		}
+	});
 
 		// Control buttons
 		$('#audio-files-btn').on('click', function() {
@@ -173,6 +208,8 @@ $(document).ready(function() {
 			throw error;
 		}
 	}
+
+
 
 	// Function to safely seek to a new position with queue management
 	function safeSeek(audioElement, newTime, onComplete) {

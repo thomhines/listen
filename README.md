@@ -12,6 +12,7 @@ A modern, responsive web-based audio player with dual-track support for audio fi
 ### 🎛️ Advanced Controls
 - **Real-time Scrubber**: Drag to seek with immediate visual feedback
 - **Skip Controls**: Jump forward/backward 10 seconds
+- **Swipe Gestures**: Swipe left/right on the main player area to skip forward/backward
 - **Volume Sliders**: Independent volume control for each player
 - **Tap to Pause/Resume**: Click the main player area to toggle playback
 
@@ -68,6 +69,7 @@ A modern, responsive web-based audio player with dual-track support for audio fi
 ### Playback Controls
 - **Play/Pause**: Click the ▶ button or tap the main player area
 - **Skip**: Use the `< 10s` and `10s >` buttons to jump backward/forward
+- **Swipe**: Swipe left/right on the main player area to skip forward/backward
 - **Seek**: Drag the scrubber bar to any position in the track
 - **Volume**: Adjust volume sliders for each player independently
 
