@@ -44,16 +44,16 @@ $(document).ready(function() {
 		});
 
 		// Audio control buttons
-		$('#back-15-btn').on('click', function() {
-			skipAudio(-15);
+		$('#back-10-btn').on('click', function() {
+			skipAudio(-10);
 		});
 
 		$('#play-pause-btn').on('click', function() {
 			togglePlayback();
 		});
 
-		$('#forward-15-btn').on('click', function() {
-			skipAudio(15);
+		$('#forward-10-btn').on('click', function() {
+			skipAudio(10);
 		});
 
 		// Music control button
@@ -369,9 +369,9 @@ $(document).ready(function() {
 	}
 
 	function updateAudioControlButtons(enabled) {
-		$('#back-15-btn').prop('disabled', !enabled);
+		$('#back-10-btn').prop('disabled', !enabled);
 		$('#play-pause-btn').prop('disabled', !enabled);
-		$('#forward-15-btn').prop('disabled', !enabled);
+		$('#forward-10-btn').prop('disabled', !enabled);
 	}
 
 	function updatePlayPauseButton() {

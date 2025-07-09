@@ -68,9 +68,9 @@ $musicFiles = getAudioFiles('_music');
 
 			<div id="control-buttons">
 				<button id="audio-files-btn" class="control-btn">Load Audio</button>
-				<button id="back-15-btn" class="control-btn" disabled>< 15s</button>
+				<button id="back-10-btn" class="control-btn" disabled>< 10s</button>
 				<button id="play-pause-btn" class="control-btn" disabled>▶</button>
-				<button id="forward-15-btn" class="control-btn" disabled>15s ></button>
+				<button id="forward-10-btn" class="control-btn" disabled>10s ></button>
 				<div class="volume-group">
 					<input type="range" id="audio-volume" class="volume-slider" min="0" max="100" value="100">
 				</div>
