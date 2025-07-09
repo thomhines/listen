@@ -1,10 +1,10 @@
 # Ignore audio files in audio and music folders
-audio/*
-music/*
+_audio/*
+_music/*
 
 # Keep .gitkeep files so that the folders are not deleted
-!audio/.gitkeep
-!music/.gitkeep
+!_audio/.gitkeep
+!_music/.gitkeep
 
 # Other ignores
 config.codekit3

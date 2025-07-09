@@ -21,8 +21,8 @@ function getAudioFiles($folder) {
 	return $files;
 }
 
-$audioFiles = getAudioFiles('audio');
-$musicFiles = getAudioFiles('music');
+$audioFiles = getAudioFiles('_audio');
+$musicFiles = getAudioFiles('_music');
 ?>
 <!DOCTYPE html>
 <html lang="en">

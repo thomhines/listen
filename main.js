@@ -20,8 +20,8 @@ $(document).ready(function() {
 
 	function loadFileLists() {
 		// Use file lists passed from PHP
-		populateFileList('audio-files-list', window.audioFiles || [], 'audio');
-		populateFileList('music-files-list', window.musicFiles || [], 'music');
+		populateFileList('audio-files-list', window.audioFiles || [], '_audio');
+		populateFileList('music-files-list', window.musicFiles || [], '_music');
 	}
 
 	function setupEventListeners() {
@@ -255,7 +255,7 @@ $(document).ready(function() {
 	async function playFile(fileName, type) {
 		const filePath = type + '/' + fileName;
 		
-		if (type === 'audio') {
+		if (type === '_audio') {
 			// Clear any pending seeks when loading new file
 			seekQueue = [];
 			isSeeking = false;
@@ -296,7 +296,7 @@ $(document).ready(function() {
 				updateAudioControlButtons(false);
 			}
 			
-		} else if (type === 'music') {
+		} else if (type === '_music') {
 			try {
 				// Buffer the entire music file
 				const bufferedMusic = await bufferAudioFile(filePath);
