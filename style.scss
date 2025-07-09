@@ -26,6 +26,115 @@ body {
 	position: relative;
 }
 
+// Top controls - Music and volume
+#top-controls {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	padding: 1rem;
+	z-index: 10;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	
+	.control-btn {
+		color: #333;
+		
+		&:hover {
+			opacity: 0.7;
+		}
+		
+		&:disabled {
+			opacity: 0.3;
+			
+			&:hover {
+				opacity: 0.3;
+			}
+		}
+	}
+	
+	#music-files-btn {
+		background: rgba(0, 0, 0, 0.1);
+		border: 1px solid rgba(0, 0, 0, 0.2);
+		
+		&:hover {
+			background: rgba(0, 0, 0, 0.2);
+			border-color: rgba(0, 0, 0, 0.3);
+		}
+		
+		&:disabled {
+			opacity: 0.3;
+			
+			&:hover {
+				background: rgba(0, 0, 0, 0.1);
+				border-color: rgba(0, 0, 0, 0.2);
+			}
+		}
+	}
+}
+
+#music-controls {
+	width: 100%;
+	display: flex;
+	gap: 0.5rem;
+	align-items: center;
+}
+
+#volume-controls {
+	width: 100%;
+	display: flex;
+	gap: 1.5rem;
+	align-items: center;
+}
+
+.volume-group {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.3rem;
+	flex: 1;
+}
+
+.volume-slider {
+	width: 100%;
+	height: 4px;
+	background: rgba(0, 0, 0, 0.2);
+	border-radius: 2px;
+	outline: none;
+	cursor: pointer;
+	-webkit-appearance: none;
+	
+	&::-webkit-slider-thumb {
+		-webkit-appearance: none;
+		appearance: none;
+		width: 16px;
+		height: 16px;
+		background: #3498db;
+		border-radius: 50%;
+		cursor: pointer;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+		
+		&:hover {
+			transform: scale(1.2);
+		}
+	}
+	
+	&::-moz-range-thumb {
+		width: 16px;
+		height: 16px;
+		background: #3498db;
+		border-radius: 50%;
+		cursor: pointer;
+		border: none;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+	}
+	
+	&:hover {
+		background: rgba(0, 0, 0, 0.3);
+	}
+}
+
 // Main player area - tap to pause/resume
 #main-player-area {
 	flex: 1;
@@ -34,6 +143,8 @@ body {
 	justify-content: center;
 	align-items: center;
 	padding: 2rem;
+	padding-top: 5rem; // Add top padding to account for top controls
+	padding-bottom: 8rem; // Add bottom padding to account for bottom controls
 	cursor: pointer;
 	background: #e5e5e5;
 	color: #333;
@@ -138,7 +249,7 @@ body {
 #control-buttons {
 	display: flex;
 	gap: 0.5rem;
-	justify-content: center;
+	justify-content: space-between;
 	align-items: center;
 }
 
@@ -148,7 +259,7 @@ button {
 	font-weight: 500;
 	cursor: pointer;
 	transition: all 0.3s ease;
-	min-width: 50px;
+	// min-width: 50px;
 	text-align: center;
 }
 
@@ -160,14 +271,14 @@ button {
 
 .control-btn {
 	color: #ffffff;
-	padding: 0.3rem 0.8rem;
+	padding: 0.3rem 0;
 	border-radius: 6px;
 	font-family: $font-family;
 	font-size: 1rem;
 	font-weight: 500;
 	cursor: pointer;
 	transition: all 0.3s ease;
-	min-width: 50px;
+	// min-width: 50px;
 	text-align: center;
 	border: none;
 	background: none;
@@ -196,6 +307,7 @@ button {
 	background: rgba(255, 255, 255, 0.1);
 	border: 1px solid rgba(255, 255, 255, 0.2);
 	font-size: .8rem;
+	padding: 0.3rem 0.6rem;
 	
 	&:hover {
 		background: rgba(255, 255, 255, 0.2);
@@ -338,8 +450,29 @@ button {
 
 // Responsive design
 @media (max-width: 768px) {
+	#top-controls {
+		padding: 0.8rem;
+		justify-content: flex-start;
+	}
+	
+	#music-controls {
+		flex-wrap: wrap;
+		gap: 0.8rem;
+	}
+	
+	#control-buttons {
+		flex-wrap: wrap;
+		gap: 0.8rem;
+	}
+	
+	.volume-slider {
+		// width: 60px;
+	}
+	
 	#main-player-area {
 		padding: 1.5rem;
+		padding-top: 7rem; // More top padding for mobile
+		padding-bottom: 8rem;
 	}
 	
 	#current-track-info h2 {
@@ -362,14 +495,14 @@ button {
 		}
 	}
 	
-	#control-buttons {
-		gap: 0.3rem;
+	.control-btn {
+		padding: .4rem;
+		font-size: 0.8rem;
+		// min-width: 45px;
 	}
 	
-	.control-btn {
+	#audio-files-btn {
 		padding: 0.4rem 0.6rem;
-		font-size: 0.8rem;
-		min-width: 45px;
 	}
 	
 	.modal-content {
@@ -392,9 +525,9 @@ button {
 		height: 20px;
 	}
 	
-	.control-btn {
-		min-width: 50px;
-	}
+	// .control-btn {
+	// 	min-width: 50px;
+	// }
 	
 	.play-btn {
 		min-height: 36px;

@@ -28,7 +28,7 @@ $(document).ready(function() {
 		// Main player area - tap to pause/resume
 		$('#main-player-area').on('click', function(e) {
 			// Don't trigger if clicking on controls
-			if ($(e.target).closest('#controls').length) {
+			if ($(e.target).closest('#controls, #top-controls').length) {
 				return;
 			}
 			togglePlayback();
@@ -59,6 +59,21 @@ $(document).ready(function() {
 		// Music control button
 		$('#music-control-btn').on('click', function() {
 			toggleMusicPlayback();
+		});
+
+		// Volume controls
+		$('#audio-volume').on('input', function() {
+			const volume = $(this).val() / 100;
+			if (currentAudioPlayer) {
+				currentAudioPlayer.volume = volume;
+			}
+		});
+
+		$('#music-volume').on('input', function() {
+			const volume = $(this).val() / 100;
+			if (currentMusicPlayer) {
+				currentMusicPlayer.volume = volume;
+			}
 		});
 
 		// Modal close buttons

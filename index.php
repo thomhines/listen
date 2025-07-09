@@ -29,11 +29,22 @@ $musicFiles = getAudioFiles('music');
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Audio Player</title>
+	<title>Listen</title>
 	<link rel="stylesheet" href="style.css">
 </head>
 <body>
 	<div id="player-container">
+		<!-- Top controls - Music and volume -->
+		<div id="top-controls">
+			<div id="music-controls">
+				<button id="music-files-btn" class="control-btn">Music</button>
+				<button id="music-control-btn" class="control-btn" disabled>▶</button>
+				<div class="volume-group">
+					<input type="range" id="music-volume" class="volume-slider" min="0" max="100" value="100">
+				</div>
+			</div>
+		</div>
+
 		<!-- Main player area - tap to pause/resume -->
 		<div id="main-player-area">
 			<div id="current-track-info">
@@ -42,7 +53,7 @@ $musicFiles = getAudioFiles('music');
 			</div>
 		</div>
 
-		<!-- Controls at bottom -->
+		<!-- Bottom controls - Audio -->
 		<div id="controls">
 			<div id="scrubber-container">
 				<div id="time-display">
@@ -56,13 +67,13 @@ $musicFiles = getAudioFiles('music');
 			</div>
 
 			<div id="control-buttons">
-				<button id="audio-files-btn" class="control-btn">Audio</button>
-				<button id="back-15-btn" class="control-btn" disabled>⏪ 15s</button>
+				<button id="audio-files-btn" class="control-btn">Load Audio</button>
+				<button id="back-15-btn" class="control-btn" disabled>< 15s</button>
 				<button id="play-pause-btn" class="control-btn" disabled>▶</button>
-				<button id="forward-15-btn" class="control-btn" disabled>⏩ 15s</button>
-				<div class="spacer"></div>
-				<button id="music-files-btn" class="control-btn">Music</button>
-				<button id="music-control-btn" class="control-btn" disabled>▶</button>
+				<button id="forward-15-btn" class="control-btn" disabled>15s ></button>
+				<div class="volume-group">
+					<input type="range" id="audio-volume" class="volume-slider" min="0" max="100" value="100">
+				</div>
 			</div>
 		</div>
 	</div>
