@@ -23,6 +23,7 @@ $(document).ready(function() {
 		loadFileLists();
 		setupEventListeners();
 		setupAudioPlayers();
+		setupMobileSafari();
 	}
 
 	function loadFileLists() {
@@ -140,6 +141,52 @@ $(document).ready(function() {
 				isDragging = false;
 			}
 		});
+	}
+
+	function setupMobileSafari() {
+		// Handle mobile Safari viewport issues
+		if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+			// Set viewport height properly for mobile Safari
+			const setViewportHeight = () => {
+				const vh = window.innerHeight * 0.01;
+				document.documentElement.style.setProperty('--vh', `${vh}px`);
+			};
+
+			// Set initial height
+			setViewportHeight();
+
+			// Update on orientation change and resize
+			window.addEventListener('resize', setViewportHeight);
+			window.addEventListener('orientationchange', () => {
+				setTimeout(setViewportHeight, 100);
+			});
+
+			// Prevent zoom on double tap
+			let lastTouchEnd = 0;
+			document.addEventListener('touchend', function (event) {
+				const now = (new Date()).getTime();
+				if (now - lastTouchEnd <= 300) {
+					event.preventDefault();
+				}
+				lastTouchEnd = now;
+			}, false);
+
+			// Prevent pull-to-refresh
+			document.body.addEventListener('touchmove', function(e) {
+				if (e.target.closest('.modal-body')) {
+					return; // Allow scrolling in modals
+				}
+				e.preventDefault();
+			}, { passive: false });
+
+			// Hide address bar on load
+			setTimeout(() => {
+				window.scrollTo(0, 1);
+				setTimeout(() => {
+					window.scrollTo(0, 0);
+				}, 100);
+			}, 100);
+		}
 	}
 
 	function setupAudioPlayers() {
