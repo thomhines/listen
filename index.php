@@ -28,8 +28,15 @@ $musicFiles = getAudioFiles('_music');
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+	<meta name="apple-mobile-web-app-title" content="Listen">
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="theme-color" content="#000000">
 	<title>Listen</title>
+	<link rel="manifest" href="manifest.json">
+	<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiByeD0iMjQiIGZpbGw9IiMwMDAwMDAiLz4KPHBhdGggZD0iTTk2IDQ4QzY5LjQ5IDQ4IDQ4IDY5LjQ5IDQ4IDk2QzQ4IDEyMi41MSA2OS40OSAxNDQgOTYgMTQ0QzEyMi41MSAxNDQgMTQ0IDEyMi41MSAxNDQgOTZDMTQ0IDY5LjQ5IDEyMi41MSA0OCA5NiA0OFoiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik05NiA2NEM3Ny4xNyA2NCA2NCA3Ny4xNyA2NCA5NkM2NCAxMTQuODMgNzcuMTcgMTI4IDk2IDEyOEMxMTQuODMgMTI4IDEyOCAxMTQuODMgMTI4IDk2QzEyOCA3Ny4xNyAxMTQuODMgNjQgOTYgNjRaIiBmaWxsPSIjMDAwMDAwIi8+CjxwYXRoIGQ9Ik04MCA4OFYxMDRIMTEyVjg4SDgwWiIgZmlsbD0iIzAwMDAwMCIvPgo8L3N2Zz4K">
 	<link rel="stylesheet" href="style.css">
 </head>
 <body>
