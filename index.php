@@ -28,16 +28,57 @@ $musicFiles = getAudioFiles('_music');
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover, minimal-ui">
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 	<meta name="apple-mobile-web-app-title" content="Listen">
 	<meta name="mobile-web-app-capable" content="yes">
 	<meta name="theme-color" content="#000000">
+	<meta name="format-detection" content="telephone=no">
+	<meta name="msapplication-tap-highlight" content="no">
 	<title>Listen</title>
 	<link rel="manifest" href="manifest.json">
 	<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiByeD0iMjQiIGZpbGw9IiMwMDAwMDAiLz4KPHBhdGggZD0iTTk2IDQ4QzY5LjQ5IDQ4IDQ4IDY5LjQ5IDQ4IDk2QzQ4IDEyMi41MSA2OS40OSAxNDQgOTYgMTQ0QzEyMi41MSAxNDQgMTQ0IDEyMi41MSAxNDQgOTZDMTQ0IDY5LjQ5IDEyMi41MSA0OCA5NiA0OFoiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik05NiA2NEM3Ny4xNyA2NCA2NCA3Ny4xNyA2NCA5NkM2NCAxMTQuODMgNzcuMTcgMTI4IDk2IDEyOEMxMTQuODMgMTI4IDEyOCAxMTQuODMgMTI4IDk2QzEyOCA3Ny4xNyAxMTQuODMgNjQgOTYgNjRaIiBmaWxsPSIjMDAwMDAwIi8+CjxwYXRoIGQ9Ik04MCA4OFYxMDRIMTEyVjg4SDgwWiIgZmlsbD0iIzAwMDAwMCIvPgo8L3N2Zz4K">
 	<link rel="stylesheet" href="style.css">
+	<style>
+		/* Force mobile viewport height */
+		html, body {
+			height: 100vh !important;
+			height: calc(var(--vh, 1vh) * 100) !important;
+			overflow: hidden !important;
+		}
+		
+		#player-container {
+			height: 100vh !important;
+			height: calc(var(--vh, 1vh) * 100) !important;
+			min-height: 100vh !important;
+			min-height: calc(var(--vh, 1vh) * 100) !important;
+		}
+		
+		/* Ensure controls are visible */
+		#controls {
+			position: fixed !important;
+			bottom: 0 !important;
+			left: 0 !important;
+			right: 0 !important;
+			z-index: 1000 !important;
+			background: rgba(0, 0, 0, 0.8) !important;
+		}
+		
+		/* Adjust main area to not overlap controls */
+		#main-player-area {
+			padding-bottom: 120px !important;
+			min-height: 0 !important;
+			flex: 1 !important;
+		}
+		
+		/* Mobile-specific adjustments */
+		@media (max-width: 768px) {
+			#main-player-area {
+				padding-bottom: 140px !important;
+			}
+		}
+	</style>
 </head>
 <body>
 	<div id="player-container">

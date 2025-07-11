@@ -1,13 +1,23 @@
 cl = console.log;
 
-$(document).ready(function() {
-	// Global variables
-	let currentAudioPlayer = null;
-	let currentMusicPlayer = null;
-	let isDragging = false;
-	let isSeeking = false; // Track if a seek operation is in progress
-	let seekQueue = []; // Queue for pending seek operations
-	let audioBuffers = new Map(); // Cache for fully buffered audio files
+	// Set viewport height immediately
+	function setViewportHeight() {
+		const vh = window.innerHeight * 0.01;
+		document.documentElement.style.setProperty('--vh', `${vh}px`);
+		cl('Setting viewport height to:', window.innerHeight, 'px (--vh:', vh, 'px)');
+	}
+
+	// Set initial viewport height
+	setViewportHeight();
+
+	$(document).ready(function() {
+		// Global variables
+		let currentAudioPlayer = null;
+		let currentMusicPlayer = null;
+		let isDragging = false;
+		let isSeeking = false; // Track if a seek operation is in progress
+		let seekQueue = []; // Queue for pending seek operations
+		let audioBuffers = new Map(); // Cache for fully buffered audio files
 	
 	// Swipe gesture variables
 	let touchStartX = 0;
@@ -144,22 +154,30 @@ $(document).ready(function() {
 	}
 
 	function setupMobileSafari() {
-		// Handle mobile Safari viewport issues
-		if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-			// Set viewport height properly for mobile Safari
+		// Handle mobile viewport issues for both Safari and Chrome
+		if (/iPad|iPhone|iPod|Android/.test(navigator.userAgent)) {
+			// Set viewport height properly for mobile browsers
 			const setViewportHeight = () => {
 				const vh = window.innerHeight * 0.01;
 				document.documentElement.style.setProperty('--vh', `${vh}px`);
+				cl('Setting viewport height to:', window.innerHeight, 'px (--vh:', vh, 'px)');
 			};
 
-			// Set initial height
+			// Set initial height multiple times to ensure it takes effect
 			setViewportHeight();
+			setTimeout(setViewportHeight, 50);
+			setTimeout(setViewportHeight, 100);
 
 			// Update on orientation change and resize
 			window.addEventListener('resize', setViewportHeight);
 			window.addEventListener('orientationchange', () => {
 				setTimeout(setViewportHeight, 100);
 			});
+			
+			// Also update on visual viewport changes (for mobile browsers)
+			if (window.visualViewport) {
+				window.visualViewport.addEventListener('resize', setViewportHeight);
+			}
 
 			// Prevent zoom on double tap
 			let lastTouchEnd = 0;
@@ -179,13 +197,45 @@ $(document).ready(function() {
 				e.preventDefault();
 			}, { passive: false });
 
-			// Hide address bar on load
-			setTimeout(() => {
+			// More aggressive address bar hiding
+			const hideAddressBar = () => {
+				// Force scroll to hide address bar
 				window.scrollTo(0, 1);
 				setTimeout(() => {
 					window.scrollTo(0, 0);
-				}, 100);
-			}, 100);
+				}, 50);
+			};
+
+			// Hide address bar on load and various events
+			hideAddressBar();
+			setTimeout(hideAddressBar, 100);
+			setTimeout(hideAddressBar, 500);
+			setTimeout(hideAddressBar, 1000);
+
+			// Hide address bar on touch events
+			document.addEventListener('touchstart', hideAddressBar, { passive: true });
+			document.addEventListener('touchend', hideAddressBar, { passive: true });
+
+			// Hide address bar on window focus
+			window.addEventListener('focus', hideAddressBar);
+			window.addEventListener('blur', hideAddressBar);
+
+			// Check if running in standalone mode (from home screen)
+			if (window.navigator.standalone === true) {
+				cl('Running in standalone mode - address bar should be hidden');
+			} else {
+				cl('Not in standalone mode - add to home screen for full-screen experience');
+			}
+			
+			// Debug viewport info
+			cl('Viewport height:', window.innerHeight);
+			cl('Document height:', document.documentElement.clientHeight);
+			cl('Body height:', document.body.clientHeight);
+			cl('User agent:', navigator.userAgent);
+			
+			// Check if web app capable meta tag is working
+			const meta = document.querySelector('meta[name="apple-mobile-web-app-capable"]');
+			cl('Web app capable meta:', meta ? meta.content : 'not found');
 		}
 	}
 
